@@ -12,3 +12,6 @@ This project is totally cool and will blow your minddddddd
 Er'body in da club
 
 # References
+
+GITHUB README MARKUP CHEAT SHEET:
+https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
