@@ -57,8 +57,10 @@ image = Open(sys.argv[1])
 
 output = MultispectralToBGR(image)
 
-cv.imshow("test",output)
-cv.waitKey(0)
+cv.imwrite(sys.argv[2],output)
+
+#cv.imshow("test",output)
+#cv.waitKey(0)
 
 
 
