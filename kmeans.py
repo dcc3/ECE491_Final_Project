@@ -22,6 +22,8 @@ f1 = np.random.randint(200, size=100)
 f2 = np.random.randint(200, size=100)
 
 X = np.array(list(zip(f1, f2)))
+print(X)
+exit()
 
 k_clusters = 4
 # Set the number of clusters
