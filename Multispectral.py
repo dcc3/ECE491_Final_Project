@@ -39,7 +39,7 @@ def Open(directory):
 	img_merge = Merge(image_list)
 	print(img_merge.shape)
 	return img_merge
-
+""" NEED TO WRITE COMMENT: this gives you a bgr image from multispectral"""
 def MultispectralToBGR(image):
 	blue = np.zeros((image.shape[0],image.shape[1]),np.uint8)
 	green = np.zeros((image.shape[0],image.shape[1]),np.uint8)
@@ -53,11 +53,20 @@ def MultispectralToBGR(image):
 	return output
 
 
-image = Open(sys.argv[1])
+def Flatten(multispectral):
+	s = multispectral.shape
+	test = np.zeros((s[0]*s[1],s[2]))
+	print("--- Flattening ---")
+	for r in range(multispectral.shape[0]):
+		for c in range(multispectral.shape[1]):
+			test[r*s[1] + c,:] = multispectral[r,c,:]
+	return test
 
-output = MultispectralToBGR(image)
+#image = Open(sys.argv[1])
 
-cv.imwrite(sys.argv[2],output)
+#output = MultispectralToBGR(image)
+
+#cv.imwrite(sys.argv[2],output)
 
 #cv.imshow("test",output)
 #cv.waitKey(0)
