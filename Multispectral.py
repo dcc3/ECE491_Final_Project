@@ -2,6 +2,9 @@ import numpy as np
 import sys
 import cv2 as cv
 import os
+import random
+import sklearn
+from sklearn.cluster import KMeans
 
 np.set_printoptions(threshold=sys.maxsize)
 
@@ -69,7 +72,7 @@ Inputs: 		k_clusters - # of clusters to predict
 Outputs:		labels - list of lables associated with pixels
 				centroids - list of cluster center coordinates
 """
-def KMeans(k_clusters, data):
+def MultiKMeans(k_clusters, data):
 	
 	# Set the number of clusters
 	kmeans = KMeans(n_clusters=k_clusters)
@@ -119,7 +122,7 @@ def MarkupRGBImage(rgbImg, labels):
 	for i in range(0,width):
 		for j in range(0, height): 
 			#if (image[j,i] != 0): # ignore black
-			lab = int(labels[pixel])
+			lab = labels[pixel]
 			segmentedImage[j,i,0] = blue[lab]
 			segmentedImage[j,i,1] = green[lab]
 			segmentedImage[j,i,2] = red[lab]
