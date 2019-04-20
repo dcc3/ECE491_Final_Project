@@ -94,6 +94,12 @@ Inputs: 		rgbImg - rgb version of multispectral image
 Outputs:		segmentedImage - rgb image marked up with segments
 """
 def MarkupRGBImage(rgbImg, labels):
+
+	height = rgbImg.shape[0]
+	width = rgbImg.shape[1]
+	
+	# holds result
+	segmentedImage = np.zeros([height,width,3])
 	
 	# Create a list of random colors based on number of labels
 	label_list = len(np.unique(labels))
@@ -107,16 +113,34 @@ def MarkupRGBImage(rgbImg, labels):
 		green[lab] = random.randint(0,255)
 		red[lab] = random.randint(0,255)
 	
+	
+	pixel = 0
 	# Color component pixels
 	for i in range(0,width):
 		for j in range(0, height): 
 			#if (image[j,i] != 0): # ignore black
-			lab = int(image[j,i])
-			color_image[j,i,0] = blue[lab]
-			color_image[j,i,1] = green[lab]
-			color_image[j,i,2] = red[lab]
+			lab = int(labels[pixel])
+			segmentedImage[j,i,0] = blue[lab]
+			segmentedImage[j,i,1] = green[lab]
+			segmentedImage[j,i,2] = red[lab]
+			
+			pixel = pixel + 1
 	
 	return segmentedImage
+
+""" 
+Description: 	Wraps SKLearn library's PCA function for use in our project 
+Inputs: 		target_features - how many features to reduce to
+				data - list of features
+Outputs:		reduced_data - PCA reduced data set
+"""	
+def PCAReduction(target_features, data):
+
+	pca = decomposition.PCA(n_components=target_features) #3
+	pca.fit(data)
+	reduced_data = pca.transform(data)
+
+	return reduced_data
 	
 #image = Open(sys.argv[1])
 
