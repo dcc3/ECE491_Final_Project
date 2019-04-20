@@ -1,7 +1,7 @@
 import sklearn
 import numpy as np
 from sklearn.cluster import KMeans
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 
 #https://mubaris.com/posts/kmeans-clustering/
 #see bottom half for sklearn implementation
@@ -21,9 +21,13 @@ kmeans = KMeans(n_clusters=k_clusters)
 # Fit data to number of clusters
 kmeans = kmeans.fit(X)
 
+print(kmeans.cluster_centers_)
+
 # Determine labels from fitting
 labels = kmeans.predict(X)
 
+print(labels)
+exit()
 
 
 # Get centroids
@@ -34,7 +38,7 @@ c_y = []
 for c in centroids:
 	c_x.append(c[0])
 	c_y.append(c[1])
-	
+"""	
 
 i = 0
 for p in range(0, len(X)):
@@ -53,7 +57,7 @@ for p in range(0, len(X)):
 plt.scatter(c_x, c_y, c='black', marker='*', s=50)
 
 plt.savefig('foo.pdf')
-
+"""
 
 
 
