@@ -3,6 +3,15 @@ import numpy as np
 from sklearn.cluster import KMeans
 #from matplotlib import pyplot as plt
 
+
+
+
+
+
+
+
+# reference below
+
 #https://mubaris.com/posts/kmeans-clustering/
 #see bottom half for sklearn implementation
 
@@ -13,6 +22,8 @@ f1 = np.random.randint(200, size=100)
 f2 = np.random.randint(200, size=100)
 
 X = np.array(list(zip(f1, f2)))
+print(X)
+exit()
 
 k_clusters = 4
 # Set the number of clusters
@@ -25,6 +36,8 @@ print(kmeans.cluster_centers_)
 
 # Determine labels from fitting
 labels = kmeans.predict(X)
+print(labels)
+exit()
 
 print(labels)
 exit()
