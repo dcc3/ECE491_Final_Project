@@ -5,6 +5,7 @@ import os
 import random
 import sklearn
 from sklearn.cluster import KMeans
+from sklearn import decomposition
 
 np.set_printoptions(threshold=sys.maxsize)
 
@@ -80,12 +81,15 @@ def MultiKMeans(k_clusters, data):
 	# Set the number of clusters
 	kmeans = KMeans(n_clusters=k_clusters)
 
+	print("Kmeans: Fitting data...")
 	# Fit data to number of clusters
 	kmeans = kmeans.fit(data)
 
+	print("Kmeans: Predicting labels...")
 	# Determine labels from fitting
 	labels = kmeans.predict(data)
 		
+	print("Kmeans: Calculating cluster centers...")
 	# Coordinates of clusters
 	centroids = kmeans.cluster_centers_
 	
@@ -127,15 +131,12 @@ def MarkupRGBImage(rgbImg, labels):
 			red.append(r)
 	
 	pixel = 0
-	# Color component pixels
+	print("Psuedo coloring cluster labels into RGB output...")
 	for i in range(0,height):
 		for j in range(0, width): 
 			#if (image[j,i] != 0): # ignore black
-			
-
-			
-			lab = int(labels[pixel])
-			
+						
+			lab = int(labels[pixel])			
 			
 			segmentedImage[i,j,0] = blue[lab]
 			segmentedImage[i,j,1] = green[lab]
@@ -151,9 +152,10 @@ Inputs: 		target_features - how many features to reduce to
 				data - list of features
 Outputs:		reduced_data - PCA reduced data set
 """	
-def PCAReduction(target_features, data):
+def PCAReduction(number_target_features, data):
 
-	pca = decomposition.PCA(n_components=target_features) #3
+	print("Using PCA to reduce used features for segmentation to: " + str(number_target_features))
+	pca = decomposition.PCA(n_components=number_target_features) #3
 	pca.fit(data)
 	reduced_data = pca.transform(data)
 
