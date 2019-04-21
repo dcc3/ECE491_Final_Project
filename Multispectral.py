@@ -112,7 +112,7 @@ Inputs: 		rgbImg - rgb version of multispectral image
 				labels - list of lables associated with pixels
 Outputs:		segmentedImage - rgb image marked up with segments
 """
-def MarkupRGBImage(rgbImg, labels):
+def MarkupRGBImage(rgbImg, labels, centers):
 
 	height = rgbImg.shape[0]
 	width = rgbImg.shape[1]
@@ -129,8 +129,9 @@ def MarkupRGBImage(rgbImg, labels):
 	red = []
 	colors = []
 	# assign random color for each label
+	"""
 	while(len(blue) < label_list):
-
+		
 		b = random.randint(0,255)
 		g = random.randint(0,255)
 		r = random.randint(0,255)
@@ -138,7 +139,14 @@ def MarkupRGBImage(rgbImg, labels):
 			blue.append(b)
 			green.append(g)
 			red.append(r)
-	
+	"""
+	for c in centers:
+		print(c)
+		blue.append(c[0])
+		green.append(c[1])
+		red.append(c[2])
+
+
 	pixel = 0
 	print("Psuedo coloring cluster labels into RGB output...")
 	for i in range(0,height):
