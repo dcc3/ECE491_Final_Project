@@ -2,6 +2,9 @@ import numpy as np
 import sys
 import cv2 as cv
 import os
+import random
+import sklearn
+from sklearn.cluster import KMeans
 
 np.set_printoptions(threshold=sys.maxsize)
 
@@ -56,10 +59,13 @@ def MultispectralToBGR(image):
 def Flatten(multispectral):
 	s = multispectral.shape
 	test = np.zeros((s[0]*s[1],s[2]))
+	
 	print("--- Flattening ---")
 	for r in range(multispectral.shape[0]):
 		for c in range(multispectral.shape[1]):
 			test[r*s[1] + c,:] = multispectral[r,c,:]
+	
+
 	return test
 	
 """ 
@@ -69,7 +75,7 @@ Inputs: 		k_clusters - # of clusters to predict
 Outputs:		labels - list of lables associated with pixels
 				centroids - list of cluster center coordinates
 """
-def KMeans(k_clusters, data):
+def MultiKMeans(k_clusters, data):
 	
 	# Set the number of clusters
 	kmeans = KMeans(n_clusters=k_clusters)
@@ -99,33 +105,44 @@ def MarkupRGBImage(rgbImg, labels):
 	width = rgbImg.shape[1]
 	
 	# holds result
-	segmentedImage = np.zeros([height,width,3])
+	segmentedImage = np.zeros([height,width,3],np.uint8)
 	
 	# Create a list of random colors based on number of labels
 	label_list = len(np.unique(labels))
-	blue = [0]*label_list
-	green = [0]*label_list
-	red = [0]*label_list
-		
-	# assign random color for each label
-	for lab in range(0,label_list):
-		blue[lab] = random.randint(0,255)
-		green[lab] = random.randint(0,255)
-		red[lab] = random.randint(0,255)
 	
+	
+	blue = []
+	green = []
+	red = []
+	colors = []
+	# assign random color for each label
+	while(len(blue) < label_list):
+
+		b = random.randint(0,255)
+		g = random.randint(0,255)
+		r = random.randint(0,255)
+		if b not in blue and g not in green and r not in red:
+			blue.append(b)
+			green.append(g)
+			red.append(r)
 	
 	pixel = 0
 	# Color component pixels
-	for i in range(0,width):
-		for j in range(0, height): 
+	for i in range(0,height):
+		for j in range(0, width): 
 			#if (image[j,i] != 0): # ignore black
+			
+
+			
 			lab = int(labels[pixel])
-			segmentedImage[j,i,0] = blue[lab]
-			segmentedImage[j,i,1] = green[lab]
-			segmentedImage[j,i,2] = red[lab]
+			
+			
+			segmentedImage[i,j,0] = blue[lab]
+			segmentedImage[i,j,1] = green[lab]
+			segmentedImage[i,j,2] = red[lab]
 			
 			pixel = pixel + 1
-	
+	print(segmentedImage.shape)
 	return segmentedImage
 
 """ 
