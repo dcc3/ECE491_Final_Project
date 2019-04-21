@@ -19,9 +19,9 @@ data = Multispectral.Flatten(myImage)
 
 labels, centers = Multispectral.MultiKMeans(6, data)
 
-resultImage = Multispectral.MarkupRGBImage(myImage, labels)
+resultImage = Multispectral.MarkupRGBImage(myImage, labels, centers)
 
-cv2.imwrite("kmeans_set1_rgb_full.jpg", resultImage)
+cv2.imwrite("kmeans_set2_rgb_full.jpg", resultImage)
 
 
 # Kmeans rgb PCA = 2
@@ -29,9 +29,9 @@ reduced_data = Multispectral.PCAReduction(2,data)
 
 labels1, centers1 = Multispectral.MultiKMeans(6, reduced_data)
 
-reduced_resultImage = Multispectral.MarkupRGBImage(myImage, labels1)
+reduced_resultImage = Multispectral.MarkupRGBImage(myImage, labels1, centers)
 
-cv2.imwrite("kmeans_set1_rgb_pca2.jpg", reduced_resultImage)
+cv2.imwrite("kmeans_set2_rgb_pca2.jpg", reduced_resultImage)
 
 
 # Kmeans rgb PCA = 1
@@ -39,6 +39,6 @@ reduced_data2 = Multispectral.PCAReduction(1,data)
 
 labels2, centers2 = Multispectral.MultiKMeans(6, reduced_data2)
 
-reduced_resultImage2 = Multispectral.MarkupRGBImage(myImage, labels2)
+reduced_resultImage2 = Multispectral.MarkupRGBImage(myImage, labels2, centers)
 
-cv2.imwrite("kmeans_set1_rgb_pca1.jpg", reduced_resultImage2)
+cv2.imwrite("kmeans_set2_rgb_pca1.jpg", reduced_resultImage2)
