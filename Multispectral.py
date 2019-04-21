@@ -56,14 +56,23 @@ def MultispectralToBGR(image):
 	return output
 
 
-def Flatten(multispectral):
+def Flatten(multispectral,spatial=0):
 	s = multispectral.shape
-	test = np.zeros((s[0]*s[1],s[2]))
+	if spatial == 0:
+		test = np.zeros((s[0]*s[1],s[2]))
 	
+	elif spatial ==1:
+		test = np.zeros((s[0]*s[1],s[2]+2))
+
 	print("--- Flattening ---")
 	for r in range(multispectral.shape[0]):
 		for c in range(multispectral.shape[1]):
-			test[r*s[1] + c,:] = multispectral[r,c,:]
+			if spatial == 0:
+				test[r*s[1] + c,:] = multispectral[r,c,:]
+			elif spatial == 1:
+				test[r*s[1] + c,:s[2]] = multispectral[r,c,:]
+				test[r*s[1] + c,s[2]] = r
+				test[r*s[1] + c,s[2]+1] = c
 	
 
 	return test
