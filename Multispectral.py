@@ -6,6 +6,7 @@ import random
 import sklearn
 from sklearn.cluster import KMeans
 from sklearn import decomposition
+from sklearn.cluster import MeanShift,estimate_bandwidth
 
 np.set_printoptions(threshold=sys.maxsize)
 
@@ -181,15 +182,22 @@ def PCAReduction(number_target_features, data):
 
 	return reduced_data
 	
-#image = Open(sys.argv[1])
+def MultiMeanShift(data,bandwidth=-1):
+	
+		rand_indices = np.random.randint(0,data.shape[0],int(data.shape[0]*.4))
+		test_train = data[rand_indices]
+		if bandwidth == -1:
+			print("--- Estimating Bandwidth ---")
+			bandwidth = estimate_bandwidth(test_train,quantile=.3,n_samples=int(len(rand_indices)*.05))
+			print("Estimated Bandwidth:",bandwidth)
+		
+		print("--- Fitting Dataset ---")
+		clusters = MeanShift(bandwidth=bandwidth,min_bin_freq=3,n_jobs=-1)
+		clusters.fit(test_train)
+		labels = clusters.predict(data)
+		centers = clusters.cluster_centers_
 
-#output = MultispectralToBGR(image)
-
-#cv.imwrite(sys.argv[2],output)
-
-#cv.imshow("test",output)
-#cv.waitKey(0)
-
+		return labels,centers,bandwidth
 
 
 
