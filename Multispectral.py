@@ -6,8 +6,12 @@ import random
 import sklearn
 from sklearn.cluster import KMeans
 from sklearn import decomposition
+from sklearn.cluster import MeanShift,estimate_bandwidth
 
 np.set_printoptions(threshold=sys.maxsize)
+
+NULL_ARR = [[0]]
+
 
 """ Merge will take a python list of opencv images and stack them all into one 'image'
 	imgs: Python list of opencv images
@@ -39,7 +43,7 @@ def Open(directory):
 			if '.bmp' in fname:
 				img_tmp = cv.imread(dirname+fname,0)
 				image_list.append(img_tmp)
-				
+					
 	img_merge = Merge(image_list)
 	print(img_merge.shape)
 	return img_merge
@@ -129,22 +133,22 @@ def MarkupRGBImage(rgbImg, labels, centers):
 	red = []
 	colors = []
 	# assign random color for each label
-	"""
-	while(len(blue) < label_list):
-		
-		b = random.randint(0,255)
-		g = random.randint(0,255)
-		r = random.randint(0,255)
-		if b not in blue and g not in green and r not in red:
-			blue.append(b)
-			green.append(g)
-			red.append(r)
-	"""
-	for c in centers:
-		print(c)
-		blue.append(c[0])
-		green.append(c[1])
-		red.append(c[2])
+	if len(centers[0]) < 3:
+		while(len(blue) < label_list):
+			
+			b = random.randint(0,255)
+			g = random.randint(0,255)
+			r = random.randint(0,255)
+			if b not in blue and g not in green and r not in red:
+				blue.append(b)
+				green.append(g)
+				red.append(r)
+	else:
+		for c in centers:
+			print(c)
+			blue.append(c[0])
+			green.append(c[1])
+			red.append(c[2])
 
 
 	pixel = 0
@@ -178,15 +182,22 @@ def PCAReduction(number_target_features, data):
 
 	return reduced_data
 	
-#image = Open(sys.argv[1])
+def MultiMeanShift(data,bandwidth=-1):
+	
+		rand_indices = np.random.randint(0,data.shape[0],int(data.shape[0]*.4))
+		test_train = data[rand_indices]
+		if bandwidth == -1:
+			print("--- Estimating Bandwidth ---")
+			bandwidth = estimate_bandwidth(test_train,quantile=.3,n_samples=int(len(rand_indices)*.05))
+			print("Estimated Bandwidth:",bandwidth)
+		
+		print("--- Fitting Dataset ---")
+		clusters = MeanShift(bandwidth=bandwidth,min_bin_freq=3,n_jobs=-1)
+		clusters.fit(test_train)
+		labels = clusters.predict(data)
+		centers = clusters.cluster_centers_
 
-#output = MultispectralToBGR(image)
-
-#cv.imwrite(sys.argv[2],output)
-
-#cv.imshow("test",output)
-#cv.waitKey(0)
-
+		return labels,centers,bandwidth
 
 
 
