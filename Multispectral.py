@@ -184,17 +184,18 @@ def PCAReduction(number_target_features, data):
 	
 def MultiMeanShift(data,bandwidth=-1):
 	
-		rand_indices = np.random.randint(0,data.shape[0],int(data.shape[0]*.4))
-		test_train = data[rand_indices]
+		#rand_indices = np.random.randint(0,data.shape[0],int(data.shape[0]*.6))
+		#test_train = data[rand_indices]
 		if bandwidth == -1:
 			print("--- Estimating Bandwidth ---")
-			bandwidth = estimate_bandwidth(test_train,quantile=.1,n_samples=int(len(rand_indices)*.05))
+			bandwidth = estimate_bandwidth(data,quantile=.2,n_samples=int(data.shape[0]*.05))
 			print("Estimated Bandwidth:",bandwidth)
 		
 		print("--- Fitting Dataset ---")
-		clusters = MeanShift(bandwidth=bandwidth,bin_seeding=True,min_bin_freq=5,n_jobs=4)
-		clusters.fit(test_train)
-		labels = clusters.predict(data)
+		clusters = MeanShift(bandwidth=bandwidth,bin_seeding=True,n_jobs=4)
+		labels = clusters.fit(test_train)
+		#labels = clusters.predict(data)
+		print(np.unique(labels))
 		centers = clusters.cluster_centers_
 
 		return labels,centers,bandwidth
