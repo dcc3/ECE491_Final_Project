@@ -188,11 +188,11 @@ def MultiMeanShift(data,bandwidth=-1):
 		test_train = data[rand_indices]
 		if bandwidth == -1:
 			print("--- Estimating Bandwidth ---")
-			bandwidth = estimate_bandwidth(test_train,quantile=.3,n_samples=int(len(rand_indices)*.05))
+			bandwidth = estimate_bandwidth(test_train,quantile=.1,n_samples=int(len(rand_indices)*.05))
 			print("Estimated Bandwidth:",bandwidth)
 		
 		print("--- Fitting Dataset ---")
-		clusters = MeanShift(bandwidth=bandwidth,min_bin_freq=3,n_jobs=-1)
+		clusters = MeanShift(bandwidth=bandwidth,bin_seeding=True,min_bin_freq=5,n_jobs=4)
 		clusters.fit(test_train)
 		labels = clusters.predict(data)
 		centers = clusters.cluster_centers_

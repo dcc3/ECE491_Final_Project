@@ -11,8 +11,8 @@ from sklearn.datasets.samples_generator import make_blobs
 def main():
 
 	imageset = sys.argv[1]
-	method = sys.argv[2]
-	spatial = sys.argv[3]
+	spatial = sys.argv[2]
+	method = sys.argv[3]
 
 	elements = imageset.split("/")
 	sub = elements[1].split("_")
@@ -27,10 +27,10 @@ def main():
 	if method == "ms":
 		
 		multispectral = Open(imageset)
-		data =Flatten(multispectral,spatial)
+		data =Flatten(multispectral,spatial = spatial)
 
 		color_image = MultispectralToBGR(multispectral)
-		data_c = Flatten(color_image,spatial)
+		data_c = Flatten(color_image,spatial = spatial)
 
 		print(len(sys.argv))
 		if(len(sys.argv) <= 4):	
@@ -40,7 +40,7 @@ def main():
 			labels, centers ,bandwidth= MultiMeanShift(data,int(sys.argv[4]))
 			labels_c, centers_c, bandwidth_c = MultiMeanShift(data_c,int(sys.argv[4]))
 
-		filename += "_"+str(bandwidth)
+		filename += "_"+str(int(bandwidth))
 		
 		output = MarkupRGBImage(color_image,labels,NULL_ARR)
 		output_c = MarkupRGBImage(color_image,labels_c,NULL_ARR)
@@ -51,10 +51,10 @@ def main():
 		filename += "_"+str(k)
 
 		multispectral = Open(imageset)
-		color_image = MultispectralToBGR(multispectral,spatial)
+		color_image = MultispectralToBGR(multispectral)
 
-		data = Flatten(multispectral,spatial)	
-		data_c = Flatten(color_image,spatial)
+		data = Flatten(multispectral,spatial=spatial)	
+		data_c = Flatten(color_image,spatial=spatial)
 
 
 		labels, centers = MultiKMeans(k, data)
@@ -67,47 +67,59 @@ def main():
 	elif method == "msp":
 		
 		multispectral = Open(imageset)
-		data =Flatten(multispectral,spatial)
+		data =Flatten(multispectral,spatial=spatial)
 
-		color_image = MultispectralToBGR(multispectral)
-
-		
+		color_image = MultispectralToBGR(multispectral)	
+		data_c =Flatten(color_image,spatial=spatial)
 		
 		
 		if(len(sys.argv) <= 5):	
 			pca = int(sys.argv[4])
 			data = PCAReduction(pca,data)
 			labels, centers, bandwidth = MultiMeanShift(data)
+			labels_c, centers_c, bandwidth_c = MultiMeanShift(data_c)
 		else:
 			pca = int(sys.argv[5])
 			data = PCAReduction(pca,data)
 			labels, centers ,bandwidth= MultiMeanShift(data,int(sys.argv[4]))
+			labels_c, centers_c, bandwidth_c = MultiMeanShift(data_c,int(sys.argv[4]))
 
-		filename += "_"+str(bandwidth)+"_"+str(pca)
+		filename += "_"+str(int(bandwidth))+"_"+str(pca)
 		
 		output = MarkupRGBImage(color_image,labels,NULL_ARR)
+		output_c = MarkupRGBImage(color_image,labels_c,NULL_ARR)
 	elif method == "kmp":
 		k = int(sys.argv[4])
 		pca = int(sys.argv[5])
-		data = PCAReduction(pca,data)
-		filename += "_"+str(k)+"_"+str(pca)
 
 		multispectral = Open(imageset)
 		color_image = MultispectralToBGR(multispectral)
 
-		data = Flatten(multispectral,spatial)	
+		data = Flatten(multispectral,spatial=spatial)	
+		data_c = Flatten(color_image,spatial=spatial)	
+		
+		data = PCAReduction(pca,data)
+		filename += "_"+str(k)+"_"+str(pca)
 
 
 
 		labels, centers = MultiKMeans(k, data)
+		labels_c, centers_c = MultiKMeans(k, data_c)
 
 		output = MarkupRGBImage(color_image, labels, NULL_ARR)
+		output_c = MarkupRGBImage(color_image, labels_c, NULL_ARR)
 
 	
+	filename_c = filename + "_c.jpg"
 	filename +=".jpg"
+
 	output = np.concatenate((color_image,output),axis=1)
+	output_c = np.concatenate((color_image,output_c),axis=1)
 	
+
+
 	cv.imwrite(filename,output)
+	cv.imwrite(filename_c,output_c)
 
 
 if __name__ == "__main__":
