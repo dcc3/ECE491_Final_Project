@@ -1,3 +1,4 @@
+
 import numpy as np
 import sys
 import cv2 as cv
@@ -76,8 +77,8 @@ def Flatten(multispectral,spatial=0):
 				test[r*s[1] + c,:] = multispectral[r,c,:]
 			elif spatial == 1:
 				test[r*s[1] + c,:s[2]] = multispectral[r,c,:]
-				test[r*s[1] + c,s[2]] = r
-				test[r*s[1] + c,s[2]+1] = c
+				test[r*s[1] + c,s[2]] = (float(r)/float(multispectral.shape[0]))*255.0
+				test[r*s[1] + c,s[2]+1] = (float(c)/float(multispectral.shape[1]))*255.0
 	
 
 	return test
@@ -184,17 +185,17 @@ def PCAReduction(number_target_features, data):
 	
 def MultiMeanShift(data,bandwidth=-1):
 	
-		#rand_indices = np.random.randint(0,data.shape[0],int(data.shape[0]*.6))
-		#test_train = data[rand_indices]
+		rand_indices = np.random.randint(0,data.shape[0],int(data.shape[0]*.6))
+		test_train = data[rand_indices]
 		if bandwidth == -1:
 			print("--- Estimating Bandwidth ---")
-			bandwidth = estimate_bandwidth(data,quantile=.2,n_samples=int(data.shape[0]*.05))
+			bandwidth = estimate_bandwidth(data,quantile=.3,n_samples=int(test_train.shape[0]*.05))
 			print("Estimated Bandwidth:",bandwidth)
 		
 		print("--- Fitting Dataset ---")
 		clusters = MeanShift(bandwidth=bandwidth,bin_seeding=True,n_jobs=4)
 		labels = clusters.fit(test_train)
-		#labels = clusters.predict(data)
+		labels = clusters.predict(data)
 		print(np.unique(labels))
 		centers = clusters.cluster_centers_
 

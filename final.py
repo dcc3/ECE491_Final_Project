@@ -108,7 +108,25 @@ def main():
 
 		output = MarkupRGBImage(color_image, labels, NULL_ARR)
 		output_c = MarkupRGBImage(color_image, labels_c, NULL_ARR)
+	elif method == "test":
+		k = int(sys.argv[4])
 
+		multispectral = Open(imageset)
+		color_image = MultispectralToBGR(multispectral)
+
+		data = Flatten(multispectral,spatial=spatial)	
+		#data_c = Flatten(color_image,spatial=spatial)
+
+
+		#labels, centers = MultiKMeans(k, data)
+		labels, centers, bandwidth = MultiMeanShift(data,k)
+		#labels_c, centers_c = MultiKMeans(k, data_c)
+
+		output = MarkupRGBImage(color_image, labels, NULL_ARR)
+		#output_c = MarkupRGBImage(color_image, labels_c, NULL_ARR)
+		cv.imshow("test",output)
+		cv.waitKey(0)
+		exit()
 	
 	filename_c = filename + "_c.jpg"
 	filename +=".jpg"
