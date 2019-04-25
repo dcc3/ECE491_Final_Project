@@ -32,7 +32,6 @@ def main():
 		color_image = MultispectralToBGR(multispectral)
 		data_c = Flatten(color_image,spatial = spatial)
 
-		print(len(sys.argv))
 		if(len(sys.argv) <= 4):	
 			labels, centers, bandwidth = MultiMeanShift(data)
 			labels_c, centers_c, bandwidth_c = MultiMeanShift(data_c)
