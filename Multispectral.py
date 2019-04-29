@@ -132,6 +132,7 @@ def MarkupRGBImage(rgbImg, labels, centers):
 	blue = []
 	green = []
 	red = []
+	"""
 	colors = []
 	# assign random color for each label
 	if len(centers[0]) < 3:
@@ -150,6 +151,15 @@ def MarkupRGBImage(rgbImg, labels, centers):
 			blue.append(c[0])
 			green.append(c[1])
 			red.append(c[2])
+	"""
+	fin = open("colors.txt",'r')
+
+	for line in fin:
+		tmp = line.strip('\n').split(" ")
+		blue.append(int(tmp[0]))
+		green.append(int(tmp[1]))
+		red.append(int(tmp[2]))
+
 
 
 	pixel = 0

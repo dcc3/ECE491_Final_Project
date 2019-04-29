@@ -39,6 +39,7 @@ def main():
 			labels, centers ,bandwidth= MultiMeanShift(data,int(sys.argv[4]))
 			labels_c, centers_c, bandwidth_c = MultiMeanShift(data_c,int(sys.argv[4]))
 
+		
 		filename += "_"+str(int(bandwidth))
 		
 		output = MarkupRGBImage(color_image,labels,NULL_ARR)
@@ -78,7 +79,7 @@ def main():
 			labels, centers, bandwidth = MultiMeanShift(data)
 			labels_c, centers_c, bandwidth_c = MultiMeanShift(data_c)
 		else:
-			pca = int(sys.argv[5])
+			pca = int(sys.argv[6])
 			data = PCAReduction(pca,data)
 			labels, centers ,bandwidth= MultiMeanShift(data,int(sys.argv[4]))
 			labels_c, centers_c, bandwidth_c = MultiMeanShift(data_c,int(sys.argv[4]))
@@ -136,7 +137,7 @@ def main():
 
 
 	cv.imwrite(filename,output)
-	cv.imwrite(filename_c,output_c)
+	cv.imwrite(filename_c,output_c)`
 
 
 if __name__ == "__main__":
