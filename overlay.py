@@ -1,14 +1,19 @@
 import cv2 as cv
 import sys
+import os
 
-image = cv.imread(sys.argv[1])
-shape = image.shape
 
-overlay = image[:,(int(shape[1]/2)):shape[1]]#,:]
-background = image[:,:(int(shape[1]/2))]#,:]
-added_image = cv.addWeighted(background,0.75,overlay,0.3,0)
 
-cv.imshow("test",added_image)
-cv.waitKey(0)
+for dirname,subdir,filelist in os.walk(sys.argv[1]):
+	for fname in sorted(filelist):
+		image = cv.imread(dirname+fname,1)
+		shape = image.shape
+		
+		tmp = fname.split(".")
+		outname= tmp[0]+"_m."+tmp[1]
 
-#cv2.imwrite('combined.png', added_image)
+		overlay = image[:,(int(shape[1]/2)):shape[1]]#,:]
+		background = image[:,:(int(shape[1]/2))]#,:]
+		added_image = cv.addWeighted(background,0.85,overlay,0.25,0)
+
+		cv.imwrite(dirname+outname, added_image)
