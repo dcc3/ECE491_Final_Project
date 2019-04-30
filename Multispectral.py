@@ -173,7 +173,7 @@ def MarkupRGBImage(rgbImg, labels, centers):
 			segmentedImage[i,j,0] = blue[lab]
 			segmentedImage[i,j,1] = green[lab]
 			segmentedImage[i,j,2] = red[lab]
-			
+
 			pixel = pixel + 1
 	print(segmentedImage.shape)
 	return segmentedImage

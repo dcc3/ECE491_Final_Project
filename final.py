@@ -111,15 +111,15 @@ def main():
 	elif method == "test":
 		k = int(sys.argv[4])
 
-		multispectral = Open(imageset)
-		color_image = MultispectralToBGR(multispectral)
+		#multispectral = Open(imageset)
+		color_image = cv.imread(imageset,1)#MultispectralToBGR(multispectral)
 
-		data = Flatten(multispectral,spatial=spatial)	
-		#data_c = Flatten(color_image,spatial=spatial)
+		#data = Flatten(multispectral,spatial=spatial)	
+		data = Flatten(color_image,spatial=spatial)
 
 
-		#labels, centers = MultiKMeans(k, data)
-		labels, centers, bandwidth = MultiMeanShift(data,k)
+		labels, centers = MultiKMeans(k, data)
+		#labels, centers, bandwidth = MultiMeanShift(data,k)
 		#labels_c, centers_c = MultiKMeans(k, data_c)
 
 		output = MarkupRGBImage(color_image, labels, NULL_ARR)
@@ -137,7 +137,7 @@ def main():
 
 
 	cv.imwrite(filename,output)
-	cv.imwrite(filename_c,output_c)`
+	cv.imwrite(filename_c,output_c)
 
 
 if __name__ == "__main__":
