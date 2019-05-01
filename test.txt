@@ -1,0 +1,1 @@
+output_data/set_2_meanpca/set2_msp_ns_30_10.jpg
