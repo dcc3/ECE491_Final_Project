@@ -79,8 +79,8 @@ for dirname,subdir,filelist in os.walk(sys.argv[2]):
 		method = hold[1]+hold[2]
 		seg_size = hold[3]
 
-		#if hold[1] == 'kmp' or hold[1] == 'msp':
-		pca_val = hold[4]
+		if hold[1] == 'kmp' or hold[1] == 'msp':
+			pca_val = hold[4]
 		
 		test_image = cv.imread(dirname+fname,1)
 		shape = test_image.shape
