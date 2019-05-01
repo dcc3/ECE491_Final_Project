@@ -1,116 +1,188 @@
+""" This script was written at the 11th hour and is what stream of consciousness programming would look like
+argv[1]: label image
+argv[2]: folder with images to process
+argv[3]: number of objects in image
+argv[4]: points of interest
+
+
+
+"""
+
 import cv2 as cv
 import numpy as np
 import sys
 from math import sqrt
 import time
+import os
+import csv
 
-poi = 20
+#this value is to make processing faster by only checking the top colors in color.txt
+poi = int(sys.argv[4])
 
-square = 21
-
-def distance(p1,p2):
-	#print(p1)
-	#print(p2)
+""" I use this function to return points from the ground truth that should all be in one class.
+	image is the ground truth image, label is the color to look for.
+"""
+def Where(image,label):
 	
+	rows = image.shape[0]
+	cols = image.shape[1]
+	points = []
+	for r in range(rows):
+		for c in range(cols):
+			tmp = (image[r,c,0],image[r,c,1],image[r,c,2])
+			if tmp == label:
+				points.append((r,c))
+	return points
+# Euclidean distance because you never know when you need to use it. 
+def distance(p1,p2):
 	return sqrt(((p1[0]-p2[0])**2) + ((p1[1]-p2[1])**2) +((p1[2]-p2[2])**2))
 
-def avg_area(point,image,square):
-	
-	
-	avg_b = 0
-	avg_g = 0
-	avg_r = 0
-	shape = image.shape
-	bound = int(square/2)
-	if (point[0] - bound) < 0 or  (point[1] - bound) < 0 or (point[0] + bound) > shape[0] or (point[1] + bound) > shape[1] :
-		return (0,0,0)
-	
-	
-	for i in range(-bound,bound):
-		for j in range(-bound,bound):
-			i_t = i + point[0]
-			j_t = point[1]+j
-			avg_b += image[i_t,j_t,0]
-			avg_g += image[i_t,j_t,1]
-			avg_r += image[i_t,j_t,2]
-
-	s = square**2
-	return avg_b/s,avg_g/s,avg_r/s
 
 start = time.time()
-label = cv.imread(sys.argv[1],0)
-test_image = cv.imread(sys.argv[2],1)
-
+label = cv.imread(sys.argv[1],1)
+# uses the list of colors from the labels and the colors that were used in psuedo coloring to make this work. 
 fin = open("colors_l.txt","r")
+fin2 = open("colors.txt",'r')
+key_labels = []
 keys = []
+key_count = {}
+key_assign = {}
+pca_val = ""
+
 
 for line in fin:
 	tmp = line.strip('\n').split(" ")
+	key_labels.append((int(tmp[0]),int(tmp[1]),int(tmp[2])))
+	key_assign[(int(tmp[0]),int(tmp[1]),int(tmp[2]))] = (0,0,0)
+	
+
+for _,line in zip(range(poi),fin2):
+	tmp = line.strip('\n').split(" ")
 	keys.append((int(tmp[0]),int(tmp[1]),int(tmp[2])))
+	key_count[(int(tmp[0]),int(tmp[1]),int(tmp[2]))] = 0
 
-keys = keys[:poi]
 
-shape = test_image.shape
-#print(shape)
-test_image = test_image[:,(int(shape[1]/2)):shape[1]]#,:]
-shape = test_image.shape
 
-"""
-label1 = np.where(label==7)
-print(len(label1[0]))
-label1 = np.where(label==8)
-print(len(label1[0]))
-label1 = np.where(label==9)
-print(len(label1[0]))
-label1 = np.where(label==6)
-print(len(label1[0]))
-label1 = np.where(label==5)
-print(len(label1[0]))
-label1 = np.where(label==4)
-print(len(label1[0]))
-label1 = np.where(label==3)
-print(len(label1[0]))
-#label1 = np.where(label==2)
-#print(len(label1[0]))
-#label1 = np.where(label==1)
-#print(len(label1[0]))
-#exit()
-"""
-c = []
-#f#or i in range(len(label1[0])):
+spatial_multi = {}
+spatial_rgb = {}
+non_multi = {}
+non_rgb = {}
+output1 = ''
+output2 = ''
 
-#	c.append((label1[0][i],label1[1][i]))
-colors = []
-colors.append((0,0,0))
-for x in range(shape[0]):
-	for y in range(shape[1]):
-		#x = points[0]
-		#y = points[1]
-		color = (test_image[x,y,0],test_image[x,y,1],test_image[x,y,2])#avg_area(points,test_image,square)
-		#print("Color:",color)
-		dist = 1000000
-		for k in keys:
-			dist_t = distance(color,k)
-			if dist_t < dist:
-				master_k = k
-				dist = dist_t
-				#if k not in colors:
-				#	colors.append(k)
-				#	print(color)
-		test_image[x,y,0] = master_k[0]
-		test_image[x,y,1] = master_k[1]
-		test_image[x,y,2] = master_k[2]
-		if master_k not in colors:
-			colors.append(master_k)
+for dirname,subdir,filelist in os.walk(sys.argv[2]):
+	for fname in sorted(filelist):
+		print(dirname+fname)
+		hold = fname.strip('\n').strip('.jpg').split("_")
+		output1 = hold[0]
+		output2 = hold[1]
+		method = hold[1]+hold[2]
+		seg_size = hold[3]
+
+		if hold[1] == 'kmp' or hold[1] == 'msp':
+			pca_val = hold[4]
 		
-			print("Matched Point:",master_k)
+		test_image = cv.imread(dirname+fname,1)
+		shape = test_image.shape
+		test_image = test_image[:,(int(shape[1]/2)):shape[1]]#,:]
+		shape = test_image.shape
+		for val in key_assign.keys():
+			key_assign[val] = (0,0,0)
+
+		accuracy = 0
+		for i in range(int(sys.argv[3])):
+			#print(i)
+			for val in key_count.keys():
+				key_count[val] = 0
+			labels = Where(label,key_labels[i])
+			for points in labels:
+					x = points[0]
+					y = points[1]
+					color = (test_image[x,y,0],test_image[x,y,1],test_image[x,y,2])
+					dist = 1000000
+					for k in keys:
+						dist_t = distance(color,k)
+						if dist_t < dist:
+							master_k = k
+							dist = dist_t
+					
+					key_count[master_k] +=1
+					
+			max_key = max(key_count, key=key_count.get)
+			check = 0
+			for val in key_assign.keys():
+				if key_assign[val] == max_key:
+					check = 1
+					break
+
+			if check == 0:
+				key_assign[key_labels[i]] = max_key
+				accuracy += key_count[max_key]
+
+		
+
+		accuracy = (accuracy/(shape[0]*shape[1]))*100
+		
+		if method == 'kms' and hold[-1] != 'c':
+			spatial_multi[seg_size] = accuracy
+		elif method == 'kms' and hold[-1] == 'c':
+			spatial_rgb[seg_size] = accuracy
+		if method == 'kmns' and hold[-1] != 'c':
+			non_multi[seg_size] = accuracy
+		if method == 'kmns' and hold[-1] == 'c':
+			non_rgb[seg_size] = accuracy
+
+
+
+if pca_val == "":
+	filename = output1+"_"+output2+'_spatial.csv'
+else:
+	filename = output1+"_"+output2+"_"+pca_val+'_spatial.csv'
+
+with open(filename, mode='w') as f:
+	fout = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+	for k in sorted(spatial_multi.keys()):
+		fout.writerow([k,spatial_multi[k]])
+	
+
+if pca_val == "":
+	filename = output1+"_"+output2+'_rgb_spatial.csv'
+else:
+	filename =output1+"_"+output2+"_"+pca_val+'_rgb_spatial.csv'
+
+
+with open(filename, mode='w') as f:
+	fout = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+	for k in sorted(spatial_rgb.keys()):
+		fout.writerow([k,spatial_rgb[k]])
+
+if pca_val == "":
+	filename = output1+"_"+output2+'_non.csv'
+else:
+	filename =output1+"_"+output2+"_"+pca_val+'_non.csv'
+
+
+with open(filename, mode='w') as f:
+	fout = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+	for k in sorted(non_multi.keys()):
+		fout.writerow([k,non_multi[k]])
+
+if pca_val == "":
+	filename = output1+"_"+output2+'_rgb_non.csv'
+else:
+	filename =output1+"_"+output2+"_"+pca_val+'_rgb_non.csv'
+#print(non_rgb)
+with open(filename, mode='w') as f:
+	fout = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+	for k in sorted(non_rgb.keys()):
+		fout.writerow([k,non_rgb[k]])
 
 
 
 
 #cv.imshow("test",test_image)
 #cv.waitKey(0)
-
+print(key_assign)
 end = time.time()
 
 print(end-start)
