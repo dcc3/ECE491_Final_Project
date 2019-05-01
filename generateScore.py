@@ -79,8 +79,8 @@ for dirname,subdir,filelist in os.walk(sys.argv[2]):
 		method = hold[1]+hold[2]
 		seg_size = hold[3]
 
-		if hold[1] == 'kmp' or hold[1] == 'msp':
-			pca_val = hold[4]
+		#if hold[1] == 'kmp' or hold[1] == 'msp':
+		pca_val = hold[4]
 		
 		test_image = cv.imread(dirname+fname,1)
 		shape = test_image.shape
@@ -122,14 +122,38 @@ for dirname,subdir,filelist in os.walk(sys.argv[2]):
 		
 
 		accuracy = (accuracy/(shape[0]*shape[1]))*100
-		if method == 'kms' and hold[-1] != 'c':
+		if method == 'kmps' and hold[-1] != 'c':
 			spatial_multi[pca_val] = accuracy
-		elif method == 'kms' and hold[-1] == 'c':
+		elif method == 'kmps' and hold[-1] == 'c':
 			spatial_rgb[pca_val] = accuracy
-		if method == 'kmns' and hold[-1] != 'c':
+		elif method == 'kmpns' and hold[-1] != 'c':
 			non_multi[pca_val] = accuracy
-		if method == 'kmns' and hold[-1] == 'c':
+		elif method == 'kmpns' and hold[-1] == 'c':
 			non_rgb[pca_val] = accuracy
+		elif method == 'msps' and hold[-1] != 'c':
+			spatial_multi[pca_val] = accuracy
+		elif method == 'msps' and hold[-1] == 'c':
+			spatial_rgb[pca_val] = accuracy
+		elif method == 'mspns' and hold[-1] != 'c':
+			non_multi[pca_val] = accuracy
+		elif method == 'mspns' and hold[-1] == 'c':
+			non_rgb[pca_val] = accuracy
+		elif method == 'kms' and hold[-1] != 'c':
+			spatial_multi[seg_size] = accuracy
+		elif method == 'kms' and hold[-1] == 'c':
+			spatial_rgb[seg_size] = accuracy
+		elif method == 'kmns' and hold[-1] != 'c':
+			non_multi[seg_size] = accuracy
+		elif method == 'kmns' and hold[-1] == 'c':
+			non_rgb[seg_size] = accuracy
+		elif method == 'mss' and hold[-1] != 'c':
+			spatial_multi[seg_size] = accuracy
+		elif method == 'mss' and hold[-1] == 'c':
+			spatial_rgb[seg_size] = accuracy
+		elif method == 'msns' and hold[-1] != 'c':
+			non_multi[seg_size] = accuracy
+		elif method == 'msns' and hold[-1] == 'c':
+			non_rgb[seg_size] = accuracy
 		"""
 		if method == 'kms' and hold[-1] != 'c':
 			spatial_multi[seg_size] = accuracy
@@ -142,47 +166,40 @@ for dirname,subdir,filelist in os.walk(sys.argv[2]):
 		"""
 
 
-#if pca_val == "":
-#	filename = output1+"_"+output2+'_spatial.csv'
-#else:
-filename = output1+"_"+output2+"_"+"pca"+'_spatial.csv'
+if pca_val == "":
+	filename = output1+"_"+output2+'_spatial.csv'
+else:
+	filename = output1+"_"+output2+"_"+"pca"+'_spatial.csv'
 
 with open(filename, mode='w') as f:
 	fout = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 	for k in sorted(spatial_multi.keys()):
 		fout.writerow([k,spatial_multi[k]])
 	
-"""
+
 if pca_val == "":
 	filename = output1+"_"+output2+'_rgb_spatial.csv'
 else:
-	filename =output1+"_"+output2+"_"+pca_val+'_rgb_spatial.csv'
-"""
-filename = output1+"_"+output2+"_"+"pca"+'_rgb_spatial.csv'
+	filename = output1+"_"+output2+"_"+"pca"+'_rgb_spatial.csv'
 
 with open(filename, mode='w') as f:
 	fout = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 	for k in sorted(spatial_rgb.keys()):
 		fout.writerow([k,spatial_rgb[k]])
-"""
+
 if pca_val == "":
 	filename = output1+"_"+output2+'_non.csv'
 else:
-	filename =output1+"_"+output2+"_"+pca_val+'_non.csv'
-"""
-
-filename = output1+"_"+output2+"_"+"pca"+'_non.csv'
+	filename = output1+"_"+output2+"_"+"pca"+'_non.csv'
 with open(filename, mode='w') as f:
 	fout = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 	for k in sorted(non_multi.keys()):
 		fout.writerow([k,non_multi[k]])
-"""
+
 if pca_val == "":
 	filename = output1+"_"+output2+'_rgb_non.csv'
 else:
-	filename =output1+"_"+output2+"_"+pca_val+'_rgb_non.csv'
-"""
-filename = output1+"_"+output2+"_"+"pca"+'_rgb_non.csv'
+	filename = output1+"_"+output2+"_"+"pca"+'_rgb_non.csv'
 #print(non_rgb)
 with open(filename, mode='w') as f:
 	fout = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
